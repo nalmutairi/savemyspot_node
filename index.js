@@ -3,21 +3,6 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var axios = require("axios");
 
-let users = {};
-let restaurantRooms = {};
-
-function getRestaurantRooms() {
-  axios
-    .get("http://127.0.0.1:8000/restaurant/list/")
-    .then(res => res.data)
-    .then(restaurants => {
-      restaurants.forEach(
-        restaurant => (restaurantRooms[restaurant.id] = restaurant.id)
-      );
-    })
-    .catch(err => console.error(err));
-}
-
 function getMyQ(socket, restaurantID) {
   axios
     .get(`http://127.0.0.1:8000/restaurant/detail/${restaurantID}/`)
@@ -76,12 +61,7 @@ io.on("connection", function(socket) {
     getRestaurantQ(socket, data.restaurant.id, data.user);
   });
 
-  //when joining the q, update the restaurantQ locally to all,
-  //then once restaurant is accessed it fetches from the backend
-  //need to send user q information back -- to know q position
-
   socket.on("join q", function(data) {
-    console.log("JOINING");
     axios
       .post("http://127.0.0.1:8000/queue/create/", data)
       .then(res => res.data)
@@ -93,19 +73,10 @@ io.on("connection", function(socket) {
   });
 
   socket.on("back", function(data) {
-    console.log("trying to leave", data);
-
     socket.leave(data);
-    if (io.sockets.adapter.rooms[1] !== undefined) {
-      console.log("there are", io.sockets.adapter.rooms[1].sockets, "1");
-    }
-    if (io.sockets.adapter.rooms[2] !== undefined) {
-      console.log("there are", io.sockets.adapter.rooms[2].sockets, "2");
-    }
   });
 
   socket.on("leave q", function(data) {
-    console.log("lEAVING");
     axios
       .delete("http://127.0.0.1:8000/queue/delete/" + data.id + "/")
       .then(res => {
