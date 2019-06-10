@@ -5,7 +5,9 @@ var axios = require("axios");
 
 function getMyQ(socket, restaurantID) {
   axios
-    .get(`http://127.0.0.1:8000/restaurant/detail/${restaurantID}/`)
+    .get(
+      `https://savemyspot-django.codeunicorn.io/restaurant/detail/${restaurantID}/`
+    )
     .then(res => res.data)
     .then(restaurant => {
       socket.join(restaurant.id);
@@ -16,9 +18,12 @@ function getMyQ(socket, restaurantID) {
 
 function getRestaurantQ(socket, restaurantID, user) {
   axios
-    .get(`http://127.0.0.1:8000/restaurant/detail/${restaurantID}/`, {
-      params: { restaurant: restaurantID }
-    })
+    .get(
+      `https://savemyspot-django.codeunicorn.io/restaurant/detail/${restaurantID}/`,
+      {
+        params: { restaurant: restaurantID }
+      }
+    )
     .then(res => res.data)
     .then(restaurant => {
       socket.join(restaurant.id);
@@ -63,7 +68,7 @@ io.on("connection", function(socket) {
 
   socket.on("join q", function(data) {
     axios
-      .post("http://127.0.0.1:8000/queue/create/", data)
+      .post("https://savemyspot-django.codeunicorn.io/queue/create/", data)
       .then(res => res.data)
       .then(restaurant => {
         io.sockets.in(restaurant.id).emit("restaurantQ", restaurant);
@@ -78,7 +83,9 @@ io.on("connection", function(socket) {
 
   socket.on("leave q", function(data) {
     axios
-      .delete("http://127.0.0.1:8000/queue/delete/" + data.id + "/")
+      .delete(
+        "https://savemyspot-django.codeunicorn.io/queue/delete/" + data.id + "/"
+      )
       .then(res => {
         io.sockets.in(res.data.id).emit("restaurantQ", res.data);
         io.sockets.in(res.data.id).emit("update queue");
@@ -93,7 +100,7 @@ io.on("connection", function(socket) {
 
   socket.on("seat guest", data => {
     axios
-      .delete(`http://127.0.0.1:8000/queue/delete/${data}/`)
+      .delete(`https://savemyspot-django.codeunicorn.io/queue/delete/${data}/`)
       .then(res => res.data)
       .then(restaurant => {
         io.to(socket.id).emit("restaurantQ", restaurant.queue);
