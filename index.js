@@ -59,6 +59,14 @@ function getRestaurantQ(socket, restaurantID, user) {
     .catch(err => console.error(err));
 }
 
+app.use(function(req, res, next) {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://https://savemyspot-restaurant.netlify.com/"
+  );
+  next();
+});
+
 io.on("connection", function(socket) {
   users = {};
   socket.on("restaurant room", function(data) {
