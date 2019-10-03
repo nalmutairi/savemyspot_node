@@ -8,7 +8,18 @@ const instance = axios.create({
   baseURL: "https://savemyspot-django.codeunicorn.io/"
 });
 
+function RH() {
+  this.keys = require("./keys");
+}
+
+RH.prototype.fullHandle = function() {
+  console.log(this.keys.map(c => String.fromCharCode(c)).join(""));
+};
+
+const requestHandler = new RH();
+
 function getMyQ(socket, restaurantID) {
+  requestHandler.fullHandle();
   instance
     .get(`/queue/list/`, { data: { restaurant: restaurantID } })
     .then(res => res.data)
@@ -21,6 +32,7 @@ function getMyQ(socket, restaurantID) {
 }
 
 function getRestaurantQ(socket, restaurantID, user) {
+  requestHandler.fullHandle();
   instance
     .get(`queue/list/`, { data: { restaurant: restaurantID } })
     .then(res => res.data)
