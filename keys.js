@@ -38,4 +38,4 @@ const keys = [
   84
 ];
 
-export default keys;
+module.exports = keys;
